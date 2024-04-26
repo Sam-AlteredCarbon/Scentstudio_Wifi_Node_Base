@@ -1,0 +1,502 @@
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * File Name          : app_freertos.c
+  * Description        : Code for freertos applications
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2024 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+
+/* Includes ------------------------------------------------------------------*/
+#include "FreeRTOS.h"
+#include "task.h"
+#include "main.h"
+#include "cmsis_os2.h"
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+/* USER CODE BEGIN Variables */
+
+/* USER CODE END Variables */
+/* Definitions for mainTask */
+osThreadId_t mainTaskHandle;
+const osThreadAttr_t mainTask_attributes = {
+  .name = "mainTask",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 512 * 4
+};
+/* Definitions for wifiTask */
+osThreadId_t wifiTaskHandle;
+const osThreadAttr_t wifiTask_attributes = {
+  .name = "wifiTask",
+  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 800 * 4
+};
+/* Definitions for sensorADCTask */
+osThreadId_t sensorADCTaskHandle;
+const osThreadAttr_t sensorADCTask_attributes = {
+  .name = "sensorADCTask",
+  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 256 * 4
+};
+/* Definitions for buttonTask */
+osThreadId_t buttonTaskHandle;
+const osThreadAttr_t buttonTask_attributes = {
+  .name = "buttonTask",
+  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 128 * 4
+};
+/* Definitions for sensorBMETask */
+osThreadId_t sensorBMETaskHandle;
+const osThreadAttr_t sensorBMETask_attributes = {
+  .name = "sensorBMETask",
+  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 256 * 4
+};
+/* Definitions for sensorzmod4410Task */
+osThreadId_t sensorzmod4410TaskHandle;
+const osThreadAttr_t sensorzmod4410Task_attributes = {
+  .name = "sensorzmod4410Task",
+  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 128 * 4
+};
+/* Definitions for sensorzmod4450Task */
+osThreadId_t sensorzmod4450TaskHandle;
+const osThreadAttr_t sensorzmod4450Task_attributes = {
+  .name = "sensorzmod4450Task",
+  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 128 * 4
+};
+/* Definitions for batteryTask */
+osThreadId_t batteryTaskHandle;
+const osThreadAttr_t batteryTask_attributes = {
+  .name = "batteryTask",
+  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 128 * 4
+};
+/* Definitions for SDCardTask */
+osThreadId_t SDCardTaskHandle;
+const osThreadAttr_t SDCardTask_attributes = {
+  .name = "SDCardTask",
+  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 128 * 4
+};
+/* Definitions for watchdogTask */
+osThreadId_t watchdogTaskHandle;
+const osThreadAttr_t watchdogTask_attributes = {
+  .name = "watchdogTask",
+  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 128 * 4
+};
+/* Definitions for myTimer01 */
+osTimerId_t myTimer01Handle;
+const osTimerAttr_t myTimer01_attributes = {
+  .name = "myTimer01"
+};
+/* Definitions for sensorADCQueue */
+osMessageQueueId_t sensorADCQueueHandle;
+const osMessageQueueAttr_t sensorADCQueue_attributes = {
+  .name = "sensorADCQueue"
+};
+/* Definitions for wifiQueue */
+osMessageQueueId_t wifiQueueHandle;
+const osMessageQueueAttr_t wifiQueue_attributes = {
+  .name = "wifiQueue"
+};
+/* Definitions for sensorBMEQueue */
+osMessageQueueId_t sensorBMEQueueHandle;
+const osMessageQueueAttr_t sensorBMEQueue_attributes = {
+  .name = "sensorBMEQueue"
+};
+/* Definitions for sensorZMOD4410Queue */
+osMessageQueueId_t sensorZMOD4410QueueHandle;
+const osMessageQueueAttr_t sensorZMOD4410Queue_attributes = {
+  .name = "sensorZMOD4410Queue"
+};
+/* Definitions for sensorZMOD4450Queue */
+osMessageQueueId_t sensorZMOD4450QueueHandle;
+const osMessageQueueAttr_t sensorZMOD4450Queue_attributes = {
+  .name = "sensorZMOD4450Queue"
+};
+/* Definitions for batteryQueue */
+osMessageQueueId_t batteryQueueHandle;
+const osMessageQueueAttr_t batteryQueue_attributes = {
+  .name = "batteryQueue"
+};
+/* Definitions for SDcardQueue */
+osMessageQueueId_t SDcardQueueHandle;
+const osMessageQueueAttr_t SDcardQueue_attributes = {
+  .name = "SDcardQueue"
+};
+/* Definitions for buttonClickEvent */
+osEventFlagsId_t buttonClickEventHandle;
+const osEventFlagsAttr_t buttonClickEvent_attributes = {
+  .name = "buttonClickEvent"
+};
+/* Definitions for dataReadyEvent */
+osEventFlagsId_t dataReadyEventHandle;
+const osEventFlagsAttr_t dataReadyEvent_attributes = {
+  .name = "dataReadyEvent"
+};
+/* Definitions for readSensorsEvent */
+osEventFlagsId_t readSensorsEventHandle;
+const osEventFlagsAttr_t readSensorsEvent_attributes = {
+  .name = "readSensorsEvent"
+};
+
+/* Private function prototypes -----------------------------------------------*/
+/* USER CODE BEGIN FunctionPrototypes */
+
+/* USER CODE END FunctionPrototypes */
+
+void StartMainTask(void *argument);
+void StartWifiTask(void *argument);
+void StartsensorADCTask(void *argument);
+void StartButtonTask(void *argument);
+void StartsensorsBMETask(void *argument);
+void Startsensorzmod4410Task(void *argument);
+void Startsensorzmod4450Task(void *argument);
+void StartTask08(void *argument);
+void StartSDCardTask(void *argument);
+void StartwatchdogTask(void *argument);
+void Callback01(void *argument);
+
+void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
+
+/* Hook prototypes */
+void vApplicationStackOverflowHook(xTaskHandle xTask, char *pcTaskName);
+void configureTimerForRunTimeStats(void);
+unsigned long getRunTimeCounterValue(void);
+
+/* USER CODE BEGIN 4 */
+void vApplicationStackOverflowHook(xTaskHandle xTask, char *pcTaskName)
+{
+   /* Run time stack overflow checking is performed if
+   configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
+   called if a stack overflow is detected. */
+}
+/* USER CODE END 4 */
+
+/* USER CODE BEGIN 1 */
+/* Functions needed when configGENERATE_RUN_TIME_STATS is on */
+__weak void configureTimerForRunTimeStats(void)
+{
+
+}
+
+__weak unsigned long getRunTimeCounterValue(void)
+{
+return 0;
+}
+/* USER CODE END 1 */
+
+/**
+  * @brief  FreeRTOS initialization
+  * @param  None
+  * @retval None
+  */
+void MX_FREERTOS_Init(void) {
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+  /* creation of myTimer01 */
+  myTimer01Handle = osTimerNew(Callback01, osTimerPeriodic, NULL, &myTimer01_attributes);
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+  /* creation of sensorADCQueue */
+  sensorADCQueueHandle = osMessageQueueNew (4, sizeof(uint16_t), &sensorADCQueue_attributes);
+  /* creation of wifiQueue */
+  wifiQueueHandle = osMessageQueueNew (4, sizeof(uint16_t), &wifiQueue_attributes);
+  /* creation of sensorBMEQueue */
+  sensorBMEQueueHandle = osMessageQueueNew (4, sizeof(uint16_t), &sensorBMEQueue_attributes);
+  /* creation of sensorZMOD4410Queue */
+  sensorZMOD4410QueueHandle = osMessageQueueNew (4, sizeof(uint16_t), &sensorZMOD4410Queue_attributes);
+  /* creation of sensorZMOD4450Queue */
+  sensorZMOD4450QueueHandle = osMessageQueueNew (4, sizeof(uint16_t), &sensorZMOD4450Queue_attributes);
+  /* creation of batteryQueue */
+  batteryQueueHandle = osMessageQueueNew (4, sizeof(uint16_t), &batteryQueue_attributes);
+  /* creation of SDcardQueue */
+  SDcardQueueHandle = osMessageQueueNew (4, sizeof(uint16_t), &SDcardQueue_attributes);
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+  /* creation of mainTask */
+  mainTaskHandle = osThreadNew(StartMainTask, NULL, &mainTask_attributes);
+
+  /* creation of wifiTask */
+  wifiTaskHandle = osThreadNew(StartWifiTask, NULL, &wifiTask_attributes);
+
+  /* creation of sensorADCTask */
+  sensorADCTaskHandle = osThreadNew(StartsensorADCTask, NULL, &sensorADCTask_attributes);
+
+  /* creation of buttonTask */
+  buttonTaskHandle = osThreadNew(StartButtonTask, NULL, &buttonTask_attributes);
+
+  /* creation of sensorBMETask */
+  sensorBMETaskHandle = osThreadNew(StartsensorsBMETask, NULL, &sensorBMETask_attributes);
+
+  /* creation of sensorzmod4410Task */
+  sensorzmod4410TaskHandle = osThreadNew(Startsensorzmod4410Task, NULL, &sensorzmod4410Task_attributes);
+
+  /* creation of sensorzmod4450Task */
+  sensorzmod4450TaskHandle = osThreadNew(Startsensorzmod4450Task, NULL, &sensorzmod4450Task_attributes);
+
+  /* creation of batteryTask */
+  batteryTaskHandle = osThreadNew(StartTask08, NULL, &batteryTask_attributes);
+
+  /* creation of SDCardTask */
+  SDCardTaskHandle = osThreadNew(StartSDCardTask, NULL, &SDCardTask_attributes);
+
+  /* creation of watchdogTask */
+  watchdogTaskHandle = osThreadNew(StartwatchdogTask, NULL, &watchdogTask_attributes);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* creation of buttonClickEvent */
+  buttonClickEventHandle = osEventFlagsNew(&buttonClickEvent_attributes);
+
+  /* creation of dataReadyEvent */
+  dataReadyEventHandle = osEventFlagsNew(&dataReadyEvent_attributes);
+
+  /* creation of readSensorsEvent */
+  readSensorsEventHandle = osEventFlagsNew(&readSensorsEvent_attributes);
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
+
+}
+/* USER CODE BEGIN Header_StartMainTask */
+/**
+* @brief Function implementing the mainTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartMainTask */
+void StartMainTask(void *argument)
+{
+  /* USER CODE BEGIN mainTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END mainTask */
+}
+
+/* USER CODE BEGIN Header_StartWifiTask */
+/**
+* @brief Function implementing the wifiTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartWifiTask */
+void StartWifiTask(void *argument)
+{
+  /* USER CODE BEGIN wifiTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END wifiTask */
+}
+
+/* USER CODE BEGIN Header_StartsensorADCTask */
+/**
+* @brief Function implementing the sensorADCTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartsensorADCTask */
+void StartsensorADCTask(void *argument)
+{
+  /* USER CODE BEGIN sensorADCTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END sensorADCTask */
+}
+
+/* USER CODE BEGIN Header_StartButtonTask */
+/**
+* @brief Function implementing the buttonTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartButtonTask */
+void StartButtonTask(void *argument)
+{
+  /* USER CODE BEGIN buttonTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END buttonTask */
+}
+
+/* USER CODE BEGIN Header_StartsensorsBMETask */
+/**
+* @brief Function implementing the sensorBMETask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartsensorsBMETask */
+void StartsensorsBMETask(void *argument)
+{
+  /* USER CODE BEGIN sensorBMETask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END sensorBMETask */
+}
+
+/* USER CODE BEGIN Header_Startsensorzmod4410Task */
+/**
+* @brief Function implementing the sensorzmod4410Task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Startsensorzmod4410Task */
+void Startsensorzmod4410Task(void *argument)
+{
+  /* USER CODE BEGIN sensorzmod4410Task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END sensorzmod4410Task */
+}
+
+/* USER CODE BEGIN Header_Startsensorzmod4450Task */
+/**
+* @brief Function implementing the sensorzmod4450Task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Startsensorzmod4450Task */
+void Startsensorzmod4450Task(void *argument)
+{
+  /* USER CODE BEGIN sensorzmod4450Task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END sensorzmod4450Task */
+}
+
+/* USER CODE BEGIN Header_StartTask08 */
+/**
+* @brief Function implementing the batteryTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask08 */
+void StartTask08(void *argument)
+{
+  /* USER CODE BEGIN batteryTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END batteryTask */
+}
+
+/* USER CODE BEGIN Header_StartSDCardTask */
+/**
+* @brief Function implementing the SDCardTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartSDCardTask */
+void StartSDCardTask(void *argument)
+{
+  /* USER CODE BEGIN SDCardTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END SDCardTask */
+}
+
+/* USER CODE BEGIN Header_StartwatchdogTask */
+/**
+* @brief Function implementing the watchdogTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartwatchdogTask */
+void StartwatchdogTask(void *argument)
+{
+  /* USER CODE BEGIN watchdogTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END watchdogTask */
+}
+
+/* Callback01 function */
+void Callback01(void *argument)
+{
+  /* USER CODE BEGIN Callback01 */
+
+  /* USER CODE END Callback01 */
+}
+
+/* Private application code --------------------------------------------------*/
+/* USER CODE BEGIN Application */
+
+/* USER CODE END Application */
+

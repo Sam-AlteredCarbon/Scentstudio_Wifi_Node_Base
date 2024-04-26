@@ -1,0 +1,14 @@
+../Core/Src/app_freertos.c:194:6:vApplicationStackOverflowHook	1
+../Core/Src/app_freertos.c:204:13:configureTimerForRunTimeStats	1
+../Core/Src/app_freertos.c:209:22:getRunTimeCounterValue	1
+../Core/Src/app_freertos.c:220:6:MX_FREERTOS_Init	1
+../Core/Src/app_freertos.c:309:6:StartMainTask	1
+../Core/Src/app_freertos.c:327:6:StartWifiTask	1
+../Core/Src/app_freertos.c:345:6:StartsensorADCTask	1
+../Core/Src/app_freertos.c:363:6:StartButtonTask	1
+../Core/Src/app_freertos.c:381:6:StartsensorsBMETask	1
+../Core/Src/app_freertos.c:399:6:Startsensorzmod4410Task	1
+../Core/Src/app_freertos.c:417:6:Startsensorzmod4450Task	1
+../Core/Src/app_freertos.c:435:6:StartTask08	1
+../Core/Src/app_freertos.c:453:6:StartSDCardTask	1
+../Core/Src/app_freertos.c:471:6:StartwatchdogTask	1
