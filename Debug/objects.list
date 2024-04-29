@@ -1,3 +1,4 @@
+"./Core/Src/ads124s08.o"
 "./Core/Src/app_freertos.o"
 "./Core/Src/gpdma.o"
 "./Core/Src/gpio.o"

@@ -29,17 +29,17 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  12 .debug_rnglists 000022b4  00000000  00000000  0004bff8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_macro  0003d71a  00000000  00000000  0004e2ac  2**0
+ 13 .debug_macro  0003cc54  00000000  00000000  0004e2ac  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_line   0003773b  00000000  00000000  0008b9c6  2**0
+ 14 .debug_line   0003773b  00000000  00000000  0008af00  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_str    001702a4  00000000  00000000  000c3101  2**0
+ 15 .debug_str    001702a4  00000000  00000000  000c263b  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .comment      00000043  00000000  00000000  002333a5  2**0
+ 16 .comment      00000043  00000000  00000000  002328df  2**0
                   CONTENTS, READONLY
- 17 .debug_frame  0000bfd8  00000000  00000000  002333e8  2**2
+ 17 .debug_frame  0000bfd8  00000000  00000000  00232924  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line_str 0000007b  00000000  00000000  0023f3c0  2**0
+ 18 .debug_line_str 0000007b  00000000  00000000  0023e8fc  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1925,11 +1925,11 @@ void SystemClock_Config(void)
   */
   HAL_PWR_EnableBkUpAccess();
  8000dec:	f003 fc94 	bl	8004718 <HAL_PWR_EnableBkUpAccess>
-  __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
+  __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_HIGH);
  8000df0:	4b1b      	ldr	r3, [pc, #108]	@ (8000e60 <SystemClock_Config+0xa8>)
  8000df2:	f8d3 30f0 	ldr.w	r3, [r3, #240]	@ 0xf0
  8000df6:	4a1a      	ldr	r2, [pc, #104]	@ (8000e60 <SystemClock_Config+0xa8>)
- 8000df8:	f023 0318 	bic.w	r3, r3, #24
+ 8000df8:	f043 0318 	orr.w	r3, r3, #24
  8000dfc:	f8c2 30f0 	str.w	r3, [r2, #240]	@ 0xf0
 
   /** Initializes the CPU, AHB and APB buses clocks

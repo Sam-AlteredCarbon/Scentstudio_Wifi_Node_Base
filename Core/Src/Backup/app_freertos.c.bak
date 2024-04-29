@@ -116,11 +116,6 @@ const osThreadAttr_t watchdogTask_attributes = {
   .priority = (osPriority_t) osPriorityLow,
   .stack_size = 128 * 4
 };
-/* Definitions for myTimer01 */
-osTimerId_t myTimer01Handle;
-const osTimerAttr_t myTimer01_attributes = {
-  .name = "myTimer01"
-};
 /* Definitions for sensorADCQueue */
 osMessageQueueId_t sensorADCQueueHandle;
 const osMessageQueueAttr_t sensorADCQueue_attributes = {
@@ -187,7 +182,6 @@ void Startsensorzmod4450Task(void *argument);
 void StartTask08(void *argument);
 void StartSDCardTask(void *argument);
 void StartwatchdogTask(void *argument);
-void Callback01(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -235,8 +229,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
-  /* creation of myTimer01 */
-  myTimer01Handle = osTimerNew(Callback01, osTimerPeriodic, NULL, &myTimer01_attributes);
 
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
@@ -485,14 +477,6 @@ void StartwatchdogTask(void *argument)
     osDelay(1);
   }
   /* USER CODE END watchdogTask */
-}
-
-/* Callback01 function */
-void Callback01(void *argument)
-{
-  /* USER CODE BEGIN Callback01 */
-
-  /* USER CODE END Callback01 */
 }
 
 /* Private application code --------------------------------------------------*/
